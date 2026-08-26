@@ -24,17 +24,9 @@ export default function Home() {
 
   const fetchLinks = useCallback(async () => {
     try {
-      const res = await fetch("/api/tags");
+      const res = await fetch("/api/links");
       const data = await res.json();
-      const allLinks: LinkItem[] = [];
-
-      for (const tag of data.tags || []) {
-        const tagRes = await fetch(`/api/tags/${tag.name}`);
-        const tagData = await tagRes.json();
-        allLinks.push(...(tagData.links || []));
-      }
-
-      setLinks(allLinks);
+      setLinks(data.links || []);
     } catch {
       // Silently fail - links will be empty
     }

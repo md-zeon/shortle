@@ -29,10 +29,14 @@ export function UrlInput({ onSubmit }: UrlInputProps) {
     }
 
     startTransition(async () => {
-      await onSubmit(url, customAlias || undefined);
-      setUrl("");
-      setCustomAlias("");
-      setShowCustom(false);
+      try {
+        await onSubmit(url, customAlias || undefined);
+        setUrl("");
+        setCustomAlias("");
+        setShowCustom(false);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "Something went wrong");
+      }
     });
   };
 
