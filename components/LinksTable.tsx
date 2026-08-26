@@ -22,19 +22,35 @@ interface LinksTableProps {
 function LinkCard({ link, onDelete }: { link: LinkItem; onDelete: (id: string) => void }) {
   const [copied, setCopied] = useState(false);
   const baseUrl = typeof window !== "undefined" ? window.location.origin : "";
+  const shortUrl = `${baseUrl}/${link.id}`;
 
-  const handleCopy = async () => {
-    await navigator.clipboard.writeText(`${baseUrl}/${link.id}`);
+  const handleCopy = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    await navigator.clipboard.writeText(shortUrl);
     setCopied(true);
     setTimeout(() => setCopied(false), 1500);
   };
 
+  const handleDelete = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    onDelete(link.id);
+  };
+
   return (
-    <div className="group p-4 rounded-xl bg-card border border-card-border card-hover">
+    <a
+      href={`/${link.id}`}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="group block p-4 rounded-xl bg-card border border-card-border card-hover"
+    >
       <div className="flex items-start justify-between gap-3">
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 mb-1.5">
-            <span className="font-mono text-sm text-accent font-medium">/{link.id}</span>
+            <span className="font-mono text-sm text-accent font-medium group-hover:underline">
+              /{link.id}
+            </span>
             <span className="text-xs text-muted">&middot;</span>
             <span className="text-xs text-muted">{formatDate(link.createdAt)}</span>
           </div>
@@ -47,10 +63,11 @@ function LinkCard({ link, onDelete }: { link: LinkItem; onDelete: (id: string) =
           <div className="text-xs text-muted">clicks</div>
         </div>
       </div>
-      <div className="flex items-center gap-1.5 mt-3 pt-3 border-t border-card-border opacity-0 group-hover:opacity-100 transition-opacity">
+      <div className="flex items-center gap-1 mt-3 pt-3 border-t border-card-border">
         <button
           onClick={handleCopy}
           className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-muted hover:text-foreground hover:bg-background transition-all"
+          title={copied ? "Copied!" : "Copy short URL"}
         >
           {copied ? (
             <>
@@ -71,6 +88,7 @@ function LinkCard({ link, onDelete }: { link: LinkItem; onDelete: (id: string) =
         </button>
         <Link
           href={`/stats/${link.id}`}
+          onClick={(e) => e.stopPropagation()}
           className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-muted hover:text-foreground hover:bg-background transition-all"
         >
           <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -83,7 +101,7 @@ function LinkCard({ link, onDelete }: { link: LinkItem; onDelete: (id: string) =
         </Link>
         <div className="flex-1" />
         <button
-          onClick={() => onDelete(link.id)}
+          onClick={handleDelete}
           className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-muted hover:text-danger hover:bg-danger/10 transition-all"
         >
           <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -94,17 +112,13 @@ function LinkCard({ link, onDelete }: { link: LinkItem; onDelete: (id: string) =
           Delete
         </button>
       </div>
-    </div>
+    </a>
   );
 }
 
 export function LinksTable({ links, onDelete }: LinksTableProps) {
   if (links.length === 0) {
-    return (
-      <div className="text-center py-12 text-muted">
-        <p>No links yet. Shorten your first URL above!</p>
-      </div>
-    );
+    return null;
   }
 
   return (
