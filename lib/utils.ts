@@ -11,12 +11,12 @@ export function getBaseUrl() {
   return `http://localhost:${process.env.PORT || 3000}`;
 }
 
-export function formatDate(date: Date): string {
+export function formatDate(date: Date | string): string {
   return new Intl.DateTimeFormat("en-US", {
     month: "short",
     day: "numeric",
     year: "numeric",
-  }).format(date);
+  }).format(new Date(date));
 }
 
 export function detectDevice(userAgent: string | null): string {
