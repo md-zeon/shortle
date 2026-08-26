@@ -4,13 +4,15 @@ import { useState, useTransition } from "react";
 import { isValidUrl } from "@/lib/utils";
 
 interface UrlInputProps {
-  onSubmit: (url: string, customAlias?: string) => Promise<void>;
+  onSubmit: (url: string, customAlias?: string, tags?: string[]) => Promise<void>;
 }
 
 export function UrlInput({ onSubmit }: UrlInputProps) {
   const [url, setUrl] = useState("");
   const [customAlias, setCustomAlias] = useState("");
   const [showCustom, setShowCustom] = useState(false);
+  const [tags, setTags] = useState<string[]>([]);
+  const [tagInput, setTagInput] = useState("");
   const [error, setError] = useState("");
   const [isPending, startTransition] = useTransition();
 
@@ -30,14 +32,28 @@ export function UrlInput({ onSubmit }: UrlInputProps) {
 
     startTransition(async () => {
       try {
-        await onSubmit(url, customAlias || undefined);
+        await onSubmit(url, customAlias || undefined, tags.length ? tags : undefined);
         setUrl("");
         setCustomAlias("");
         setShowCustom(false);
+        setTags([]);
+        setTagInput("");
       } catch (err) {
         setError(err instanceof Error ? err.message : "Something went wrong");
       }
     });
+  };
+
+  const addTag = () => {
+    const tag = tagInput.trim().toLowerCase();
+    if (tag && !tags.includes(tag)) {
+      setTags([...tags, tag]);
+    }
+    setTagInput("");
+  };
+
+  const removeTag = (tag: string) => {
+    setTags(tags.filter((t) => t !== tag));
   };
 
   return (
@@ -84,7 +100,7 @@ export function UrlInput({ onSubmit }: UrlInputProps) {
             <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={`transition-transform ${showCustom ? "rotate-90" : ""}`}>
               <path d="M9 18l6-6-6-6" />
             </svg>
-            {showCustom ? "Hide custom alias" : "Custom alias"}
+            {showCustom ? "Hide options" : "Options"}
           </button>
           {url && !error && (
             <span className="text-xs text-muted">Press Enter to shorten</span>
@@ -93,7 +109,7 @@ export function UrlInput({ onSubmit }: UrlInputProps) {
       </div>
 
       {showCustom && (
-        <div className="mt-3 animate-slide-up">
+        <div className="mt-3 space-y-3 animate-slide-up">
           <div className="flex items-center gap-2 p-1 rounded-xl bg-card border border-card-border">
             <span className="pl-4 text-sm text-muted font-mono">/</span>
             <input
@@ -104,6 +120,55 @@ export function UrlInput({ onSubmit }: UrlInputProps) {
               className="flex-1 py-2.5 bg-transparent text-foreground placeholder:text-muted focus:outline-none font-mono text-sm"
               disabled={isPending}
             />
+          </div>
+          <div className="p-3 rounded-xl bg-card border border-card-border">
+            <label className="text-xs text-muted mb-2 block">Tags</label>
+            {tags.length > 0 && (
+              <div className="flex flex-wrap gap-1.5 mb-2">
+                {tags.map((tag) => (
+                  <span
+                    key={tag}
+                    className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-accent/10 text-accent text-xs font-medium"
+                  >
+                    {tag}
+                    <button
+                      type="button"
+                      onClick={() => removeTag(tag)}
+                      className="hover:text-foreground transition-colors"
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M18 6 6 18" />
+                        <path d="m6 6 12 12" />
+                      </svg>
+                    </button>
+                  </span>
+                ))}
+              </div>
+            )}
+            <div className="flex items-center gap-2">
+              <input
+                type="text"
+                value={tagInput}
+                onChange={(e) => setTagInput(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    e.preventDefault();
+                    addTag();
+                  }
+                }}
+                placeholder="Add tag and press Enter"
+                className="flex-1 py-1.5 bg-transparent text-foreground placeholder:text-muted focus:outline-none text-sm"
+                disabled={isPending}
+              />
+              <button
+                type="button"
+                onClick={addTag}
+                disabled={!tagInput.trim()}
+                className="px-2.5 py-1.5 rounded-lg text-xs font-medium text-muted hover:text-foreground hover:bg-background transition-all disabled:opacity-30"
+              >
+                Add
+              </button>
+            </div>
           </div>
         </div>
       )}
@@ -116,7 +181,7 @@ export function UrlInput({ onSubmit }: UrlInputProps) {
             <line x1="12" y1="16" x2="12.01" y2="16" />
           </svg>
           {error}
-        </div>
+       </div>
       )}
     </form>
   );

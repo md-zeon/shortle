@@ -2,13 +2,19 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { formatDate } from "@/lib/utils";
+import { formatDate, isValidUrl } from "@/lib/utils";
+
+interface Tag {
+  id: string;
+  name: string;
+}
 
 interface LinkItem {
   id: string;
   originalUrl: string;
   customAlias: string | null;
   createdAt: Date;
+  tags: Tag[];
   _count: {
     clicks: number;
   };
@@ -17,10 +23,14 @@ interface LinkItem {
 interface LinksTableProps {
   links: LinkItem[];
   onDelete: (id: string) => void;
+  onEdit?: (id: string, originalUrl: string) => void;
 }
 
-function LinkCard({ link, onDelete }: { link: LinkItem; onDelete: (id: string) => void }) {
+function LinkCard({ link, onDelete, onEdit }: { link: LinkItem; onDelete: (id: string) => void; onEdit?: (id: string, originalUrl: string) => void }) {
   const [copied, setCopied] = useState(false);
+  const [editing, setEditing] = useState(false);
+  const [editUrl, setEditUrl] = useState(link.originalUrl);
+  const [editError, setEditError] = useState("");
   const baseUrl = typeof window !== "undefined" ? window.location.origin : "";
   const shortUrl = `${baseUrl}/${link.id}`;
 
@@ -36,6 +46,30 @@ function LinkCard({ link, onDelete }: { link: LinkItem; onDelete: (id: string) =
     e.preventDefault();
     e.stopPropagation();
     onDelete(link.id);
+  };
+
+  const handleSaveEdit = async () => {
+    setEditError("");
+    if (!isValidUrl(editUrl)) {
+      setEditError("Please enter a valid URL");
+      return;
+    }
+    try {
+      const res = await fetch(`/api/links/${link.id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ originalUrl: editUrl }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setEditError(data.error || "Failed to update");
+        return;
+      }
+      onEdit?.(link.id, editUrl);
+      setEditing(false);
+    } catch {
+      setEditError("Failed to update");
+    }
   };
 
   return (
@@ -55,9 +89,43 @@ function LinkCard({ link, onDelete }: { link: LinkItem; onDelete: (id: string) =
             <span className="text-xs text-muted">&middot;</span>
             <span className="text-xs text-muted">{formatDate(link.createdAt)}</span>
           </div>
-          <p className="text-sm text-muted truncate" title={link.originalUrl}>
-            {link.originalUrl}
-          </p>
+          {editing ? (
+            <div className="mt-1">
+              <div className="flex items-center gap-2">
+                <input
+                  type="text"
+                  value={editUrl}
+                  onChange={(e) => { setEditUrl(e.target.value); setEditError(""); }}
+                  onKeyDown={(e) => { if (e.key === "Enter") handleSaveEdit(); if (e.key === "Escape") { setEditing(false); setEditUrl(link.originalUrl); } }}
+                  className="flex-1 px-2.5 py-1.5 rounded-lg bg-background border border-card-border text-sm text-foreground focus:outline-none focus:border-accent font-mono"
+                  autoFocus
+                />
+                <button onClick={handleSaveEdit} className="px-2.5 py-1.5 rounded-lg bg-accent text-white text-xs font-medium hover:bg-accent-hover transition-all">
+                  Save
+                </button>
+                <button onClick={() => { setEditing(false); setEditUrl(link.originalUrl); setEditError(""); }} className="px-2.5 py-1.5 rounded-lg text-xs font-medium text-muted hover:text-foreground hover:bg-background transition-all">
+                  Cancel
+                </button>
+              </div>
+              {editError && <p className="text-xs text-danger mt-1.5">{editError}</p>}
+            </div>
+          ) : (
+            <p className="text-sm text-muted truncate" title={link.originalUrl}>
+              {link.originalUrl}
+            </p>
+          )}
+          {link.tags.length > 0 && (
+            <div className="flex flex-wrap gap-1 mt-2">
+              {link.tags.map((tag) => (
+                <span
+                  key={tag.id}
+                  className="px-2 py-0.5 rounded-md bg-accent/10 text-accent text-[11px] font-medium"
+                >
+                  {tag.name}
+                </span>
+              ))}
+            </div>
+          )}
         </div>
         <div className="text-right flex-shrink-0">
           <div className="font-mono text-lg font-semibold">{link._count.clicks}</div>
@@ -86,6 +154,16 @@ function LinkCard({ link, onDelete }: { link: LinkItem; onDelete: (id: string) =
               Copy
             </>
           )}
+        </button>
+        <button
+          onClick={(e) => { e.preventDefault(); e.stopPropagation(); setEditing(!editing); }}
+          className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-muted hover:text-foreground hover:bg-background transition-all"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z" />
+            <path d="m15 5 4 4" />
+          </svg>
+          Edit
         </button>
         <Link
           href={`/stats/${link.id}`}
@@ -117,7 +195,7 @@ function LinkCard({ link, onDelete }: { link: LinkItem; onDelete: (id: string) =
   );
 }
 
-export function LinksTable({ links, onDelete }: LinksTableProps) {
+export function LinksTable({ links, onDelete, onEdit }: LinksTableProps) {
   if (links.length === 0) {
     return null;
   }
@@ -125,7 +203,7 @@ export function LinksTable({ links, onDelete }: LinksTableProps) {
   return (
     <div className="grid gap-3">
       {links.map((link) => (
-        <LinkCard key={link.id} link={link} onDelete={onDelete} />
+        <LinkCard key={link.id} link={link} onDelete={onDelete} onEdit={onEdit} />
       ))}
     </div>
   );

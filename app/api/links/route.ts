@@ -9,6 +9,9 @@ export async function GET() {
         originalUrl: true,
         customAlias: true,
         createdAt: true,
+        tags: {
+          select: { id: true, name: true },
+        },
         _count: {
           select: { clicks: true },
         },

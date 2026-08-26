@@ -5,11 +5,17 @@ import { UrlInput } from "@/components/UrlInput";
 import { ShortenedResult } from "@/components/ShortenedResult";
 import { LinksTable } from "@/components/LinksTable";
 
+interface Tag {
+  id: string;
+  name: string;
+}
+
 interface LinkItem {
   id: string;
   originalUrl: string;
   customAlias: string | null;
   createdAt: Date;
+  tags: Tag[];
   _count: {
     clicks: number;
   };
@@ -36,11 +42,11 @@ export default function Home() {
     fetchLinks();
   }, [fetchLinks]);
 
-  const handleShorten = async (url: string, customAlias?: string) => {
+  const handleShorten = async (url: string, customAlias?: string, tags?: string[]) => {
     const res = await fetch("/api/shorten", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ url, customAlias }),
+      body: JSON.stringify({ url, customAlias, tags }),
     });
 
     const data = await res.json();
@@ -64,6 +70,10 @@ export default function Home() {
       setLinks(links.filter((link) => link.id !== id));
       if (shortenedLink?.id === id) setShortenedLink(null);
     }
+  };
+
+  const handleEdit = (id: string, originalUrl: string) => {
+    setLinks(links.map((link) => link.id === id ? { ...link, originalUrl } : link));
   };
 
   return (
@@ -98,7 +108,7 @@ export default function Home() {
               <h2 className="text-lg font-semibold">Recent Links</h2>
               <span className="text-sm text-muted font-mono">{links.length} total</span>
             </div>
-            <LinksTable links={links} onDelete={handleDelete} />
+            <LinksTable links={links} onDelete={handleDelete} onEdit={handleEdit} />
           </section>
         )}
 
