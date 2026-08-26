@@ -24,11 +24,8 @@ interface LinkItem {
 }
 
 interface TagWithCount {
-  id: string;
   name: string;
-  _count: {
-    links: number;
-  };
+  linkCount: number;
 }
 
 export default function Home() {
@@ -141,7 +138,7 @@ export default function Home() {
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
               {tags.map((tag) => (
                 <Link
-                  key={tag.id}
+                  key={tag.name}
                   href={`/tags/${tag.name}`}
                   className="p-4 rounded-xl bg-card border border-border hover:border-primary/30 transition-colors group"
                 >
@@ -149,7 +146,7 @@ export default function Home() {
                     #{tag.name}
                   </div>
                   <div className="text-xs text-muted-foreground">
-                    {tag._count.links} {tag._count.links === 1 ? "link" : "links"}
+                    {tag.linkCount} {tag.linkCount === 1 ? "link" : "links"}
                   </div>
                 </Link>
               ))}
