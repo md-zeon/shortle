@@ -6,6 +6,7 @@ import { ClickChart } from "@/components/ClickChart";
 import { ReferrerChart } from "@/components/ReferrerChart";
 import { DeviceChart } from "@/components/DeviceChart";
 import { CountryChart } from "@/components/CountryChart";
+import { BrowserChart } from "@/components/BrowserChart";
 import { formatDate } from "@/lib/utils";
 
 export default async function StatsPage({
@@ -36,7 +37,7 @@ export default async function StatsPage({
     now.getDate()
   );
 
-  const [totalClicks, todayClicks, referrers, devices, countries, clicks] =
+  const [totalClicks, todayClicks, referrers, devices, browsers, countries, clicks] =
     await Promise.all([
       db.click.count({ where: { linkId: code } }),
       db.click.count({
@@ -51,6 +52,12 @@ export default async function StatsPage({
       }),
       db.click.groupBy({
         by: ["device"],
+        where: { linkId: code },
+        _count: { id: true },
+        orderBy: { _count: { id: "desc" } },
+      }),
+      db.click.groupBy({
+        by: ["browser"],
         where: { linkId: code },
         _count: { id: true },
         orderBy: { _count: { id: "desc" } },
@@ -139,9 +146,11 @@ export default async function StatsPage({
           <ClickChart data={timeline} />
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-            <ReferrerChart data={referrers.map((r: { referrer: string | null; _count: { id: number } }) => ({ name: r.referrer, count: r._count.id }))} total={totalClicks} />
             <DeviceChart data={devices.map((d: { device: string | null; _count: { id: number } }) => ({ name: d.device, count: d._count.id }))} total={totalClicks} />
+            <BrowserChart data={browsers.map((b: { browser: string | null; _count: { id: number } }) => ({ name: b.browser, count: b._count.id }))} total={totalClicks} />
           </div>
+
+          <ReferrerChart data={referrers.map((r: { referrer: string | null; _count: { id: number } }) => ({ name: r.referrer, count: r._count.id }))} total={totalClicks} />
 
           <CountryChart data={countries.map((c: { country: string | null; _count: { id: number } }) => ({ name: c.country, count: c._count.id }))} total={totalClicks} />
         </div>

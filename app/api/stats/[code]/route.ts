@@ -25,7 +25,7 @@ export async function GET(
     const now = new Date();
     const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
 
-    const [totalClicks, todayClicks, referrers, devices, countries, clicks] =
+    const [totalClicks, todayClicks, referrers, devices, browsers, countries, clicks] =
       await Promise.all([
         db.click.count({ where: { linkId: code } }),
         db.click.count({
@@ -40,6 +40,12 @@ export async function GET(
         }),
         db.click.groupBy({
           by: ["device"],
+          where: { linkId: code },
+          _count: { id: true },
+          orderBy: { _count: { id: "desc" } },
+        }),
+        db.click.groupBy({
+          by: ["browser"],
           where: { linkId: code },
           _count: { id: true },
           orderBy: { _count: { id: "desc" } },
@@ -78,6 +84,7 @@ export async function GET(
         todayClicks,
         referrers: referrers.map((r: { referrer: string | null; _count: { id: number } }) => ({ name: r.referrer, count: r._count.id })),
         devices: devices.map((d: { device: string | null; _count: { id: number } }) => ({ name: d.device, count: d._count.id })),
+        browsers: browsers.map((b: { browser: string | null; _count: { id: number } }) => ({ name: b.browser, count: b._count.id })),
         countries: countries.map((c: { country: string | null; _count: { id: number } }) => ({
           name: c.country,
           count: c._count.id,

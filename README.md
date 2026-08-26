@@ -15,15 +15,15 @@ A modern, full-stack URL shortener with analytics, QR codes, tag-based grouping,
 
 ## Tech Stack
 
-| Layer      | Technology                    |
-| ---------- | ----------------------------- |
-| Framework  | Next.js 16 (App Router)       |
-| Styling    | Tailwind CSS v4               |
-| Database   | PostgreSQL + Prisma ORM       |
-| Short IDs  | nanoid (7 characters)         |
-| QR Codes   | qrcode (client-side)          |
-| Charts     | Recharts                      |
-| Themes     | next-themes                   |
+| Layer     | Technology              |
+| --------- | ----------------------- |
+| Framework | Next.js 16 (App Router) |
+| Styling   | Tailwind CSS v4         |
+| Database  | PostgreSQL + Prisma ORM |
+| Short IDs | nanoid (7 characters)   |
+| QR Codes  | qrcode (client-side)    |
+| Charts    | Recharts                |
+| Themes    | next-themes             |
 
 ## Getting Started
 
