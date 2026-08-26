@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import Link from "next/link";
 import { UrlInput } from "@/components/UrlInput";
 import { ShortenedResult } from "@/components/ShortenedResult";
 import { LinksTable } from "@/components/LinksTable";
@@ -15,14 +16,24 @@ interface LinkItem {
   originalUrl: string;
   customAlias: string | null;
   createdAt: Date;
+  expiresAt: Date | null;
   tags: Tag[];
   _count: {
     clicks: number;
   };
 }
 
+interface TagWithCount {
+  id: string;
+  name: string;
+  _count: {
+    links: number;
+  };
+}
+
 export default function Home() {
   const [links, setLinks] = useState<LinkItem[]>([]);
+  const [tags, setTags] = useState<TagWithCount[]>([]);
   const [shortenedLink, setShortenedLink] = useState<{
     shortUrl: string;
     id: string;
@@ -38,15 +49,26 @@ export default function Home() {
     }
   }, []);
 
+  const fetchTags = useCallback(async () => {
+    try {
+      const res = await fetch("/api/tags");
+      const data = await res.json();
+      setTags(data.tags || []);
+    } catch {
+      // Silently fail
+    }
+  }, []);
+
   useEffect(() => {
     fetchLinks();
-  }, [fetchLinks]);
+    fetchTags();
+  }, [fetchLinks, fetchTags]);
 
-  const handleShorten = async (url: string, customAlias?: string, tags?: string[]) => {
+  const handleShorten = async (url: string, customAlias?: string, tags?: string[], expiresAt?: string) => {
     const res = await fetch("/api/shorten", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ url, customAlias, tags }),
+      body: JSON.stringify({ url, customAlias, tags, expiresAt }),
     });
 
     const data = await res.json();
@@ -107,6 +129,31 @@ export default function Home() {
               <span className="text-sm text-muted-foreground font-mono">{links.length} total</span>
             </div>
             <LinksTable links={links} onDelete={handleDelete} onEdit={handleEdit} />
+          </section>
+        )}
+
+        {tags.length > 0 && (
+          <section className="mt-10 animate-fade-in">
+            <div className="flex items-center justify-between mb-5">
+              <h2 className="text-lg font-semibold">Tags</h2>
+              <span className="text-sm text-muted-foreground font-mono">{tags.length} total</span>
+            </div>
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
+              {tags.map((tag) => (
+                <Link
+                  key={tag.id}
+                  href={`/tags/${tag.name}`}
+                  className="p-4 rounded-xl bg-card border border-border hover:border-primary/30 transition-colors group"
+                >
+                  <div className="text-primary font-medium text-sm group-hover:underline mb-1">
+                    #{tag.name}
+                  </div>
+                  <div className="text-xs text-muted-foreground">
+                    {tag._count.links} {tag._count.links === 1 ? "link" : "links"}
+                  </div>
+                </Link>
+              ))}
+            </div>
           </section>
         )}
 

@@ -14,6 +14,7 @@ interface LinkItem {
   originalUrl: string;
   customAlias: string | null;
   createdAt: Date;
+  expiresAt: Date | null;
   tags: Tag[];
   _count: {
     clicks: number;
@@ -103,6 +104,18 @@ function LinkCard({
             <span className="text-xs text-muted-foreground">
               {formatDate(link.createdAt)}
             </span>
+            {link.expiresAt && (
+              <>
+                <span className="text-xs text-muted-foreground">&middot;</span>
+                <span className={`text-xs flex items-center gap-1 ${new Date(link.expiresAt) < new Date() ? "text-destructive" : "text-muted-foreground"}`}>
+                  <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <circle cx="12" cy="12" r="10" />
+                    <polyline points="12 6 12 12 16 14" />
+                  </svg>
+                  {new Date(link.expiresAt) < new Date() ? "Expired" : `Expires ${formatDate(link.expiresAt)}`}
+                </span>
+              </>
+            )}
           </div>
           {editing ? (
             <div className="mt-1">
@@ -156,12 +169,14 @@ function LinkCard({
           {link.tags.length > 0 && (
             <div className="flex flex-wrap gap-1 mt-2">
               {link.tags.map((tag) => (
-                <span
+                <Link
                   key={tag.id}
-                  className="px-2 py-0.5 rounded-md bg-primary/10 text-primary text-[11px] font-medium"
+                  href={`/tags/${tag.name}`}
+                  onClick={(e) => e.stopPropagation()}
+                  className="px-2 py-0.5 rounded-md bg-primary/10 text-primary text-[11px] font-medium hover:underline"
                 >
                   {tag.name}
-                </span>
+                </Link>
               ))}
             </div>
           )}

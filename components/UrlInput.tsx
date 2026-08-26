@@ -4,7 +4,7 @@ import { useState, useTransition } from "react";
 import { isValidUrl } from "@/lib/utils";
 
 interface UrlInputProps {
-  onSubmit: (url: string, customAlias?: string, tags?: string[]) => Promise<void>;
+  onSubmit: (url: string, customAlias?: string, tags?: string[], expiresAt?: string) => Promise<void>;
 }
 
 export function UrlInput({ onSubmit }: UrlInputProps) {
@@ -13,6 +13,7 @@ export function UrlInput({ onSubmit }: UrlInputProps) {
   const [showCustom, setShowCustom] = useState(false);
   const [tags, setTags] = useState<string[]>([]);
   const [tagInput, setTagInput] = useState("");
+  const [expiresAt, setExpiresAt] = useState("");
   const [error, setError] = useState("");
   const [isPending, startTransition] = useTransition();
 
@@ -32,12 +33,13 @@ export function UrlInput({ onSubmit }: UrlInputProps) {
 
     startTransition(async () => {
       try {
-        await onSubmit(url, customAlias || undefined, tags.length ? tags : undefined);
+        await onSubmit(url, customAlias || undefined, tags.length ? tags : undefined, expiresAt || undefined);
         setUrl("");
         setCustomAlias("");
         setShowCustom(false);
         setTags([]);
         setTagInput("");
+        setExpiresAt("");
       } catch (err) {
         setError(err instanceof Error ? err.message : "Something went wrong");
       }
@@ -169,6 +171,22 @@ export function UrlInput({ onSubmit }: UrlInputProps) {
                 Add
               </button>
             </div>
+          </div>
+          <div className="p-3 rounded-xl bg-card border border-border">
+            <label className="text-xs text-muted-foreground mb-2 block flex items-center gap-1.5">
+              <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="12" cy="12" r="10" />
+                <polyline points="12 6 12 12 16 14" />
+              </svg>
+              Expires
+            </label>
+            <input
+              type="datetime-local"
+              value={expiresAt}
+              onChange={(e) => setExpiresAt(e.target.value)}
+              className="w-full py-1.5 px-2.5 rounded-lg bg-background border border-border text-sm text-foreground focus:outline-none focus:border-ring font-mono"
+              disabled={isPending}
+            />
           </div>
         </div>
       )}

@@ -6,7 +6,7 @@ import { isValidUrl } from "@/lib/utils";
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { url, customAlias, tags } = body;
+    const { url, customAlias, tags, expiresAt } = body;
 
     if (!url || typeof url !== "string") {
       return NextResponse.json({ error: "URL is required" }, { status: 400 });
@@ -43,6 +43,7 @@ export async function POST(request: NextRequest) {
         id,
         originalUrl: url,
         customAlias: customAlias || null,
+        expiresAt: expiresAt ? new Date(expiresAt) : null,
         tags: tags?.length
           ? {
               connectOrCreate: tags.map((tag: string) => ({
