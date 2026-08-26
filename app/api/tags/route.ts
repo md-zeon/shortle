@@ -13,7 +13,7 @@ export async function GET() {
     });
 
     return NextResponse.json({
-      tags: tags.map((tag) => ({
+      tags: tags.map((tag: { name: string; _count: { links: number } }) => ({
         name: tag.name,
         linkCount: tag._count.links,
       })),

@@ -62,7 +62,7 @@ export async function GET(
       ]);
 
     const timelineMap = new Map<string, number>();
-    clicks.forEach((click) => {
+    clicks.forEach((click: { clickedAt: Date }) => {
       const date = click.clickedAt.toISOString().split("T")[0];
       timelineMap.set(date, (timelineMap.get(date) || 0) + 1);
     });
@@ -76,9 +76,9 @@ export async function GET(
       stats: {
         totalClicks,
         todayClicks,
-        referrers: referrers.map((r) => ({ name: r.referrer, count: r._count.id })),
-        devices: devices.map((d) => ({ name: d.device, count: d._count.id })),
-        countries: countries.map((c) => ({
+        referrers: referrers.map((r: { referrer: string | null; _count: { id: number } }) => ({ name: r.referrer, count: r._count.id })),
+        devices: devices.map((d: { device: string | null; _count: { id: number } }) => ({ name: d.device, count: d._count.id })),
+        countries: countries.map((c: { country: string | null; _count: { id: number } }) => ({
           name: c.country,
           count: c._count.id,
         })),

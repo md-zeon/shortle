@@ -74,7 +74,7 @@ export default async function StatsPage({
     ]);
 
   const timelineMap = new Map<string, number>();
-  clicks.forEach((click) => {
+  clicks.forEach((click: { clickedAt: Date }) => {
     const date = click.clickedAt.toISOString().split("T")[0];
     timelineMap.set(date, (timelineMap.get(date) || 0) + 1);
   });
@@ -116,11 +116,11 @@ export default async function StatsPage({
           <ClickChart data={timeline} />
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <ReferrerChart data={referrers.map((r) => ({ name: r.referrer, count: r._count.id }))} total={totalClicks} />
-            <DeviceChart data={devices.map((d) => ({ name: d.device, count: d._count.id }))} total={totalClicks} />
+            <ReferrerChart data={referrers.map((r: { referrer: string | null; _count: { id: number } }) => ({ name: r.referrer, count: r._count.id }))} total={totalClicks} />
+            <DeviceChart data={devices.map((d: { device: string | null; _count: { id: number } }) => ({ name: d.device, count: d._count.id }))} total={totalClicks} />
           </div>
 
-          <CountryChart data={countries.map((c) => ({ name: c.country, count: c._count.id }))} total={totalClicks} />
+          <CountryChart data={countries.map((c: { country: string | null; _count: { id: number } }) => ({ name: c.country, count: c._count.id }))} total={totalClicks} />
         </div>
       </div>
     </div>

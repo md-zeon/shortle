@@ -27,13 +27,13 @@ export async function GET(
     }
 
     const totalClicks = tag.links.reduce(
-      (sum, link) => sum + link._count.clicks,
+      (sum: number, link: { _count: { clicks: number } }) => sum + link._count.clicks,
       0
     );
 
     return NextResponse.json({
       tag: tag.name,
-      links: tag.links.map((link) => ({
+      links: tag.links.map((link: { id: string; originalUrl: string; _count: { clicks: number }; createdAt: Date }) => ({
         id: link.id,
         originalUrl: link.originalUrl,
         shortUrl: `/${link.id}`,
