@@ -1,7 +1,8 @@
 import { redirect } from "next/navigation";
 import { headers } from "next/headers";
+import geoip from "geoip-lite";
 import { db } from "@/lib/db";
-import { detectDevice, detectBrowser } from "@/lib/utils";
+import { detectDevice, detectBrowser, getCountryName } from "@/lib/utils";
 
 export default async function RedirectPage({
   params,
@@ -25,11 +26,25 @@ export default async function RedirectPage({
   const headersList = await headers();
   const userAgent = headersList.get("user-agent");
   const referrer = headersList.get("referer") || headersList.get("referrer");
-  const country =
+
+  let country =
     headersList.get("x-vercel-ip-country") ||
     headersList.get("cf-ipcountry") ||
     headersList.get("x-country") ||
     null;
+
+  if (!country) {
+    const forwarded = headersList.get("x-forwarded-for");
+    const ip = forwarded?.split(",")[0]?.trim() || null;
+    if (ip) {
+      const geo = geoip.lookup(ip);
+      if (geo?.country) {
+        country = geo.country;
+      }
+    }
+  }
+
+  const countryName = country ? getCountryName(country) : null;
 
   await db.click.create({
     data: {
@@ -37,7 +52,7 @@ export default async function RedirectPage({
       referrer: referrer || null,
       device: detectDevice(userAgent),
       browser: detectBrowser(userAgent),
-      country: country,
+      country: countryName,
     },
   });
 
