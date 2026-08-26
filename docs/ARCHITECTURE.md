@@ -9,14 +9,14 @@ Shortle is a full-stack URL shortener built with Next.js 16 App Router, PostgreS
 ```
 ┌─────────────────────────────────────────────────────────┐
 │                      Client (Browser)                   │
-│  ┌──────────┐  ┌──────────┐  ┌──────────┐              │
-│  │  Home    │  │  Stats   │  │  Tags    │              │
-│  │  Page    │  │  Page    │  │  Page    │              │
-│  └────┬─────┘  └────┬─────┘  └────┬─────┘              │
-│       │              │              │                    │
-└───────┼──────────────┼──────────────┼────────────────────┘
-        │              │              │
-        ▼              ▼              ▼
+│  ┌──────────┐  ┌──────────┐                             │
+│  │  Home    │  │  Stats   │                             │
+│  │  Page    │  │  Page    │                             │
+│  └────┬─────┘  └────┬─────┘                             │
+│       │              │                                   │
+└───────┼──────────────┼───────────────────────────────────┘
+        │              │
+        ▼              ▼
 ┌─────────────────────────────────────────────────────────┐
 │                    Next.js 16 (App Router)               │
 │  ┌────────────────────────────────────────────────────┐ │
@@ -54,17 +54,15 @@ shortle/
 ├── app/                    # Next.js App Router
 │   ├── page.tsx           # Home page (URL shortener + dashboard)
 │   ├── [code]/
-│   │   └── page.tsx       # Redirect handler
+│   │   └── page.tsx       # Redirect handler with click tracking
 │   ├── stats/
 │   │   └── [code]/
-│   │       └── page.tsx   # Analytics page
-│   ├── tags/
-│   │   └── [name]/
-│   │       └── page.tsx   # Tag-filtered view
+│   │       └── page.tsx   # Analytics page (server component)
 │   ├── api/               # API routes
 │   │   ├── shorten/
 │   │   │   └── route.ts   # POST: Create short link
 │   │   ├── links/
+│   │   │   ├── route.ts   # GET: List all links
 │   │   │   └── [code]/
 │   │   │       └── route.ts  # PATCH/DELETE: Edit or remove link
 │   │   ├── stats/
@@ -74,25 +72,28 @@ shortle/
 │   │       ├── route.ts      # GET: List all tags
 │   │       └── [name]/
 │   │           └── route.ts  # GET: Tag stats
-│   ├── layout.tsx         # Root layout
-│   └── globals.css        # Global styles
+│   ├── layout.tsx         # Root layout (header, footer, theme, palette)
+│   └── globals.css        # 5 palette definitions, animations, base styles
 ├── components/            # React components
-│   ├── UrlInput.tsx       # URL input form
-│   ├── ShortenedResult.tsx # Short link display + copy
-│   ├── LinksTable.tsx     # Dashboard links list
-│   ├── LinkRow.tsx        # Single link row
-│   ├── LinkEditor.tsx     # Edit link destination
+│   ├── UrlInput.tsx       # URL input form with custom alias + tags
+│   ├── ShortenedResult.tsx # Short link display + copy/QR/stats
+│   ├── LinksTable.tsx     # Card-based dashboard with inline edit/delete
+│   ├── QrModal.tsx        # QR code modal with download
 │   ├── StatsOverview.tsx  # Stats summary cards
-│   ├── ClickChart.tsx     # Clicks over time chart
+│   ├── ClickChart.tsx     # Clicks over time bar chart (Recharts)
 │   ├── ReferrerChart.tsx  # Referrer breakdown
 │   ├── DeviceChart.tsx    # Device breakdown
-│   ├── CountryChart.tsx   # Geographic breakdown
-│   ├── TagManager.tsx     # Tag creation/assignment
-│   └── ui/                # Shared UI primitives (shadcn/ui)
+│   ├── CountryChart.tsx   # Geographic breakdown grid
+│   ├── theme-provider.tsx # next-themes wrapper
+│   ├── theme-toggle.tsx   # Light/dark/system cycle toggle
+│   ├── palette-provider.tsx # Palette context + localStorage persistence
+│   └── palette-switcher.tsx # Dropdown palette selector
 ├── lib/                   # Utilities and shared logic
 │   ├── db.ts              # Prisma client singleton
 │   ├── types.ts           # TypeScript type definitions
-│   └── utils.ts           # Helper functions
+│   └── utils.ts           # Helpers (cn, formatDate, detectDevice, getCountryName)
+├── types/
+│   └── geoip-lite.d.ts    # Type declarations for geoip-lite module
 ├── prisma/
 │   └── schema.prisma      # Database schema
 ├── docs/                  # Project documentation
@@ -143,7 +144,7 @@ Check if expired → 404 if yes
 Record Click (referrer, device, browser, country)
        │
        ▼
-301 Redirect to originalUrl
+307 Redirect to originalUrl
 ```
 
 ### Analytics Retrieval
@@ -158,7 +159,7 @@ Page Server fetches link + all clicks
 Aggregate: referrers, devices, countries, timeline
        │
        ▼
-Render StatsOverview, ClickChart, ReferrerChart, etc.
+Render StatsOverview, ClickChart, ReferrerChart, DeviceChart, CountryChart
 ```
 
 ## Key Design Decisions
@@ -197,7 +198,14 @@ Links can be tagged for campaign-level analytics:
 
 - Many-to-many relationship (Link ↔ Tag)
 - Aggregate stats per tag
-- Filter dashboard by tag
+- Tags displayed as badges on link cards
+
+### 6. Five Switchable Color Palettes
+
+- CSS custom properties in `globals.css` define all palette colors
+- `PaletteProvider` context manages selection via localStorage
+- `data-palette` attribute on `<html>` activates the selected palette
+- FOUC prevention script in `<head>` reads preferences before paint
 
 ## Performance Targets
 
@@ -211,7 +219,6 @@ Links can be tagged for campaign-level analytics:
 ## Security Considerations
 
 - Validate and sanitize all URL inputs
-- Rate limiting on `/api/shorten`
 - No user data stored (anonymous by default)
 - HTTPS enforced in production
 - Environment variables for secrets (never committed)

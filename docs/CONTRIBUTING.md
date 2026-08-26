@@ -134,13 +134,12 @@ git push origin feature/my-feature
 
 ### Styling
 
-- Use Tailwind CSS utility classes
-- Follow the existing color palette:
-  - Background: `#0A090F`
-  - Cards: `#1A1A1E`
-  - Accent: `#5542FF`
-  - Success: `#22C55E`
-  - Text: `#EFEFE6`
+- Use Tailwind CSS v4 utility classes (CSS-first configuration)
+- Follow the existing color palette system — 5 palettes defined in `globals.css`:
+  - Colors are defined via CSS custom properties in `:root` (light) and `.dark` (dark)
+  - Palette variants use `[data-palette="..."]` selectors
+  - Utility classes reference variables via `@theme inline` (e.g., `text-primary` → `var(--primary)`)
+  - Never hardcode colors — always use CSS variable references
 
 ### API Routes
 

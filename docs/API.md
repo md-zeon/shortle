@@ -86,6 +86,33 @@ Update an existing link's destination or expiration.
 
 ---
 
+### List Links
+
+```
+GET /api/links
+```
+
+Retrieve all shortened links with tags and click counts.
+
+**Response**
+
+```json
+{
+  "links": [
+    {
+      "id": "abc123",
+      "originalUrl": "https://example.com/very/long/url",
+      "customAlias": null,
+      "createdAt": "2026-08-25T10:00:00Z",
+      "tags": [{ "id": "tag1", "name": "marketing" }],
+      "_count": { "clicks": 142 }
+    }
+  ]
+}
+```
+
+---
+
 ### Delete Link
 
 ```
@@ -126,7 +153,7 @@ Redirect to the original URL and track the click event.
 
 **Behavior**
 
-- Redirects (301) to the original URL
+- Redirects (307) to the original URL
 - Records click with referrer, device, browser, and country data
 - Returns 404 if link not found or expired
 
@@ -242,17 +269,6 @@ Retrieve all links and aggregated stats for a specific tag.
 
 ---
 
-## Rate Limits
-
-| Tier       | Requests per minute |
-| ---------- | ------------------- |
-| Free       | 60                  |
-| Pro        | 600                 |
-
-## Authentication
-
-Authentication will be added in V2. Current endpoints are public.
-
 ## Data Tracking
 
 Click events automatically capture:
@@ -260,4 +276,4 @@ Click events automatically capture:
 - **Referrer** — HTTP `Referer` header
 - **Device** — User-agent parsed (Mobile/Desktop/Tablet)
 - **Browser** — Chrome, Firefox, Safari, etc.
-- **Country** — IP-based geolocation
+- **Country** — IP-based geolocation via Vercel/Cloudflare headers or geoip-lite fallback

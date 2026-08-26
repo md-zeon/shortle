@@ -147,11 +147,13 @@ Add these DNS records at your registrar:
 
 ### 3. Update Environment Variable
 
-Update `BASE_URL` in your environment:
+Update `VERCEL_URL` in your environment (automatically set by Vercel):
 
 ```env
 BASE_URL=https://sho.rt
 ```
+
+> **Note:** On Vercel, the `VERCEL_URL` environment variable is automatically available and used by the application. `BASE_URL` is only needed for custom domain setups on non-Vercel deployments.
 
 ---
 
@@ -220,8 +222,8 @@ npx prisma --version
 
 ### Vercel Settings
 
-- **Edge Functions**: Redirects should use Edge for lowest latency
-- **ISR**: Cache stats pages with `revalidate` option
+- **Server Components**: Redirect handler and stats page use standard Next.js Server Components (not Edge)
+- **ISR**: Cache stats pages with `revalidate` option if needed
 - **Image Optimization**: Use `next/image` for QR code previews
 
 ### Database Optimization

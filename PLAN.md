@@ -90,26 +90,33 @@ A modern URL shortener with analytics. Paste a long URL, get a short link, track
 └──────────────────────────────────────────────────┘
 ```
 
-### Color Palette
+### Color Palettes (5 Switchable Themes)
 
-- Background: `#0A090F`
-- Cards: `#1A1A1E`
-- Accent: `#5542FF`
-- Success: `#22C55E`
-- Text: `#EFEFE6`
+Each palette has light and dark mode variants, switchable via header controls.
+
+| Palette            | Light BG | Dark BG  | Primary      |
+| ------------------ | -------- | -------- | ------------ |
+| Rose Spark (default)| `#FBF9FA` | `#0C0D12` | `#E11D48`  |
+| Indigo Velocity    | `#F8F8FC` | `#0C0D14` | `#4F46E5`  |
+| Violet Pulse       | `#FAFAFE` | `#0B0B0F` | `#7C3AED`  |
+| Teal Stream        | `#F5FAFA` | `#0A1012` | `#0D9488`  |
+| Emerald Link       | `#F6FAF8` | `#0A0D0C` | `#059669`  |
 
 ### Key Components
 
-- `UrlInput` — paste long URL
-- `ShortenedResult` — show short URL with copy/QR
-- `LinksTable` — list of all shortened links
-- `StatsPage` — detailed analytics
-- `QRModal` — QR code display
-- `ReferrerChart` — top referrers pie chart
-- `DeviceChart` — device breakdown
-- `CountryChart` — geographic breakdown
-- `TagManager` — create/assign tags to links
-- `LinkEditor` — edit destination URL
+- `UrlInput` — paste long URL with custom alias and tags
+- `ShortenedResult` — show short URL with copy/QR/stats buttons
+- `LinksTable` — card-based dashboard with inline edit, delete, tags
+- `StatsOverview` — total and today's click counts
+- `ClickChart` — clicks over time bar chart (Recharts)
+- `QRModal` — QR code display with download
+- `ReferrerChart` — top referrers bar list
+- `DeviceChart` — device breakdown (Mobile/Desktop/Tablet)
+- `CountryChart` — geographic breakdown grid
+- `ThemeProvider` — next-themes light/dark/system toggle
+- `PaletteProvider` — 5-palette switching with localStorage persistence
+- `PaletteSwitcher` — dropdown palette selector
+- `ThemeToggle` — sun/moon icon toggle
 
 ---
 
@@ -118,7 +125,7 @@ A modern URL shortener with analytics. Paste a long URL, get a short link, track
 | Layer      | Technology                |
 | ---------- | ------------------------- |
 | Framework  | Next.js 16 (App Router)   |
-| Styling    | Tailwind CSS + shadcn/ui  |
+| Styling    | Tailwind CSS v4 (CSS-first) |
 | Database   | PostgreSQL via Prisma ORM |
 | Short IDs  | `nanoid`                  |
 | QR Codes   | `qrcode`                  |
@@ -139,24 +146,29 @@ A modern URL shortener with analytics. Paste a long URL, get a short link, track
 
 ### V1
 
-- [ ] Click analytics (referrer, device, country)
-- [ ] Geographic analytics
-- [ ] QR code for each link
-- [ ] Custom aliases
-- [ ] Editable destinations (update URL without breaking link)
-- [ ] Link expiration
-- [ ] Delete links
-- [ ] Tag-based campaign grouping
+- [x] Click analytics (referrer, device, country)
+- [x] Geographic analytics (95 country names mapped)
+- [x] QR code for each link (with download)
+- [x] Custom aliases
+- [x] Editable destinations (update URL without breaking link)
+- [x] Link expiration (backend only, no UI picker)
+- [x] Delete links (inline two-step confirmation)
+- [x] Tag-based campaign grouping (create/assign/display tags)
+- [x] Click chart over time (Recharts bar chart)
+- [x] 5 switchable color palettes with light/dark/system toggle
+- [x] FOUC prevention for theme and palette
+- [x] Country detection (Vercel/Cloudflare headers + geoip-lite fallback)
 
 ### V2 (Optional)
 
-- [ ] Click chart over time (hourly patterns)
 - [ ] Password-protected links
 - [ ] Custom short domains (e.g., `go.yourbrand.com`)
 - [ ] Deep linking to native apps
 - [ ] UTM parameter builder
-- [ ] API for programmatic access
+- [ ] API authentication (API keys)
 - [ ] Bulk shortening
+- [ ] User authentication and saved links
+- [ ] Dedicated tag-filtered pages (`/tags/[name]`)
 
 ---
 
@@ -164,7 +176,7 @@ A modern URL shortener with analytics. Paste a long URL, get a short link, track
 
 ```prisma
 model Link {
-  id            String   @id @default(nanoid())
+  id            String   @id @default(nanoid(7))
   originalUrl   String
   customAlias   String?  @unique
   createdAt     DateTime @default(now())
@@ -208,21 +220,27 @@ model Tag {
 // Body: { url: string, customAlias?: string, tags?: string[] }
 // Response: { shortUrl: string, id: string }
 
+// GET /api/links
+// Response: { links: Link[] } (with tags and click counts)
+
 // PATCH /api/links/[code]
 // Body: { originalUrl?: string, expiresAt?: string }
 // Response: { success: boolean }
 
+// DELETE /api/links/[code]
+// Response: { success: boolean }
+
 // GET /[code]
-// Redirects to original URL + tracks click
+// Redirects to original URL + tracks click (307 redirect)
 
 // GET /api/stats/[code]
-// Response: { clicks, referrers[], devices[], countries[], timeline[] }
+// Response: { link, stats: { totalClicks, todayClicks, referrers[], devices[], countries[], timeline[] } }
 
 // GET /api/tags
 // Response: { tags: { name: string, linkCount: number }[] }
 
 // GET /api/tags/[name]
-// Response: { links: Link[], stats: aggregatedStats }
+// Response: { tag, links: Link[], stats: { totalLinks, totalClicks } }
 ```
 
 ---
@@ -230,52 +248,54 @@ model Tag {
 ## File Structure
 
 ```
-url-shortener/
+shortle/
 ├── app/
-│   ├── page.tsx
-│   ├── [code]/page.tsx          # Redirect handler
-│   ├── stats/[code]/page.tsx    # Stats page
-│   ├── tags/[name]/page.tsx     # Tag-filtered view
-│   ├── layout.tsx
-│   └── globals.css
-├── app/api/
-│   ├── shorten/route.ts
-│   ├── links/[code]/route.ts    # Edit/delete link
-│   ├── stats/[code]/route.ts
-│   ├── tags/route.ts            # List/create tags
-│   └── tags/[name]/route.ts     # Get tag stats
+│   ├── page.tsx            # Home page (URL shortener + dashboard)
+│   ├── [code]/
+│   │   └── page.tsx        # Redirect handler
+│   ├── stats/
+│   │   └── [code]/
+│   │       └── page.tsx    # Analytics page
+│   ├── api/
+│   │   ├── shorten/
+│   │   │   └── route.ts    # POST: Create short link
+│   │   ├── links/
+│   │   │   ├── route.ts    # GET: List all links
+│   │   │   └── [code]/
+│   │   │       └── route.ts  # PATCH/DELETE: Edit or remove link
+│   │   ├── stats/
+│   │   │   └── [code]/
+│   │   │       └── route.ts  # GET: Link analytics
+│   │   └── tags/
+│   │       ├── route.ts      # GET: List all tags
+│   │       └── [name]/
+│   │           └── route.ts  # GET: Tag stats
+│   ├── layout.tsx          # Root layout (header, footer, theme, palette)
+│   └── globals.css         # All 5 palette definitions, animations, base styles
 ├── components/
-│   ├── UrlInput.tsx
-│   ├── ShortenedResult.tsx
-│   ├── LinksTable.tsx
-│   ├── LinkRow.tsx
-│   ├── LinkEditor.tsx
-│   ├── StatsOverview.tsx
-│   ├── ClickChart.tsx
-│   ├── ReferrerChart.tsx
-│   ├── DeviceChart.tsx
-│   ├── CountryChart.tsx
-│   ├── TagManager.tsx
-│   └── ui/
+│   ├── UrlInput.tsx        # URL input with custom alias + tags
+│   ├── ShortenedResult.tsx # Short link display + copy/QR/stats
+│   ├── LinksTable.tsx      # Card-based dashboard with inline edit/delete
+│   ├── QrModal.tsx         # QR code modal with download
+│   ├── StatsOverview.tsx   # Stats summary cards
+│   ├── ClickChart.tsx      # Clicks over time bar chart
+│   ├── ReferrerChart.tsx   # Referrer breakdown
+│   ├── DeviceChart.tsx     # Device breakdown
+│   ├── CountryChart.tsx    # Geographic breakdown grid
+│   ├── theme-provider.tsx  # next-themes wrapper
+│   ├── theme-toggle.tsx    # Light/dark/system cycle toggle
+│   ├── palette-provider.tsx # Palette context + localStorage persistence
+│   └── palette-switcher.tsx # Dropdown palette selector
 ├── lib/
-│   ├── db.ts                   # Prisma client
-│   ├── types.ts
-│   └── utils.ts
+│   ├── db.ts               # Prisma client singleton
+│   ├── types.ts            # TypeScript type definitions
+│   └── utils.ts            # Helpers (cn, formatDate, detectDevice, etc.)
+├── types/
+│   └── geoip-lite.d.ts     # Type declarations for geoip-lite
 ├── prisma/
-│   └── schema.prisma
-├── docs/
-│   ├── API.md
-│   ├── ARCHITECTURE.md
-│   ├── DATABASE.md
-│   ├── DEPLOYMENT.md
-│   ├── CONTRIBUTING.md
-│   ├── CODE_OF_CONDUCT.md
-│   └── CHANGELOG.md
-├── package.json
-├── tailwind.config.ts
-├── tsconfig.json
-├── .env                         # DATABASE_URL
-└── PLAN.md
+│   └── schema.prisma       # Database schema
+├── docs/                   # Project documentation
+└── public/                 # Static assets
 ```
 
 ---

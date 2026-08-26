@@ -61,7 +61,7 @@ Records individual click events.
 model Click {
   id        String   @id @default(cuid())
   linkId    String
-  link      Link     @relation(fields: [linkId], references: [id])
+  link      Link     @relation(fields: [linkId], references: [id], onDelete: Cascade)
   referrer  String?
   device    String?
   browser   String?
@@ -69,13 +69,14 @@ model Click {
   clickedAt DateTime @default(now())
 
   @@index([linkId])
+  @@index([clickedAt])
 }
 ```
 
 | Field       | Type       | Description                              |
 | ----------- | ---------- | ---------------------------------------- |
 | `id`        | `String`   | Unique click identifier (cuid)           |
-| `linkId`    | `String`   | Foreign key to Link                      |
+| `linkId`    | `String`   | Foreign key to Link (cascade delete)   |
 | `referrer`  | `String?`  | HTTP Referer header value                |
 | `device`    | `String?`  | Device type (Mobile/Desktop/Tablet)      |
 | `browser`   | `String?`  | Browser name (Chrome/Firefox/Safari)     |
@@ -203,7 +204,7 @@ npx prisma db push --force-reset
 
 ## Performance Notes
 
-- **Indexes**: `Link.customAlias` and `Click.linkId` are indexed for fast lookups
+- **Indexes**: `Link.customAlias`, `Click.linkId`, and `Click.clickedAt` are indexed for fast lookups
 - **Nanoid**: Collision-resistant, URL-safe IDs at minimal overhead
 - **Connection Pooling**: Use PgBouncer or Prisma Accelerate for production
 - **Read Replicas**: Consider for analytics-heavy queries at scale
