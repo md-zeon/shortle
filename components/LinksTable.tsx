@@ -26,7 +26,15 @@ interface LinksTableProps {
   onEdit?: (id: string, originalUrl: string) => void;
 }
 
-function LinkCard({ link, onDelete, onEdit }: { link: LinkItem; onDelete: (id: string) => void; onEdit?: (id: string, originalUrl: string) => void }) {
+function LinkCard({
+  link,
+  onDelete,
+  onEdit,
+}: {
+  link: LinkItem;
+  onDelete: (id: string) => void;
+  onEdit?: (id: string, originalUrl: string) => void;
+}) {
   const [copied, setCopied] = useState(false);
   const [editing, setEditing] = useState(false);
   const [editUrl, setEditUrl] = useState(link.originalUrl);
@@ -92,7 +100,9 @@ function LinkCard({ link, onDelete, onEdit }: { link: LinkItem; onDelete: (id: s
               /{link.id}
             </a>
             <span className="text-xs text-muted-foreground">&middot;</span>
-            <span className="text-xs text-muted-foreground">{formatDate(link.createdAt)}</span>
+            <span className="text-xs text-muted-foreground">
+              {formatDate(link.createdAt)}
+            </span>
           </div>
           {editing ? (
             <div className="mt-1">
@@ -100,22 +110,46 @@ function LinkCard({ link, onDelete, onEdit }: { link: LinkItem; onDelete: (id: s
                 <input
                   type="text"
                   value={editUrl}
-                  onChange={(e) => { setEditUrl(e.target.value); setEditError(""); }}
-                  onKeyDown={(e) => { if (e.key === "Enter") handleSaveEdit(); if (e.key === "Escape") { setEditing(false); setEditUrl(link.originalUrl); } }}
+                  onChange={(e) => {
+                    setEditUrl(e.target.value);
+                    setEditError("");
+                  }}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") handleSaveEdit();
+                    if (e.key === "Escape") {
+                      setEditing(false);
+                      setEditUrl(link.originalUrl);
+                    }
+                  }}
                   className="flex-1 px-2.5 py-1.5 rounded-lg bg-background border border-border text-sm text-foreground focus:outline-none focus:border-ring font-mono"
                   autoFocus
                 />
-                <button onClick={handleSaveEdit} className="px-2.5 py-1.5 rounded-lg bg-primary text-primary-foreground text-xs font-medium hover:opacity-90 transition-all">
+                <button
+                  onClick={handleSaveEdit}
+                  className="px-2.5 py-1.5 rounded-lg bg-primary text-primary-foreground text-xs font-medium hover:opacity-90 transition-all"
+                >
                   Save
                 </button>
-                <button onClick={() => { setEditing(false); setEditUrl(link.originalUrl); setEditError(""); }} className="px-2.5 py-1.5 rounded-lg text-xs font-medium text-muted-foreground hover:text-foreground hover:bg-secondary transition-all">
+                <button
+                  onClick={() => {
+                    setEditing(false);
+                    setEditUrl(link.originalUrl);
+                    setEditError("");
+                  }}
+                  className="px-2.5 py-1.5 rounded-lg text-xs font-medium text-muted-foreground hover:text-foreground hover:bg-secondary transition-all"
+                >
                   Cancel
                 </button>
               </div>
-              {editError && <p className="text-xs text-destructive mt-1.5">{editError}</p>}
+              {editError && (
+                <p className="text-xs text-destructive mt-1.5">{editError}</p>
+              )}
             </div>
           ) : (
-            <p className="text-sm text-muted-foreground truncate" title={link.originalUrl}>
+            <p
+              className="text-sm text-muted-foreground truncate"
+              title={link.originalUrl}
+            >
               {link.originalUrl}
             </p>
           )}
@@ -132,8 +166,10 @@ function LinkCard({ link, onDelete, onEdit }: { link: LinkItem; onDelete: (id: s
             </div>
           )}
         </div>
-        <div className="text-right flex-shrink-0">
-          <div className="font-mono text-lg font-semibold">{link._count.clicks}</div>
+        <div className="text-right shrink-0">
+          <div className="font-mono text-lg font-semibold">
+            {link._count.clicks}
+          </div>
           <div className="text-xs text-muted-foreground">clicks</div>
         </div>
       </div>
@@ -145,14 +181,34 @@ function LinkCard({ link, onDelete, onEdit }: { link: LinkItem; onDelete: (id: s
         >
           {copied ? (
             <>
-              <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="12"
+                height="12"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
                 <polyline points="20 6 9 17 4 12" />
               </svg>
               Copied
             </>
           ) : (
             <>
-              <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="12"
+                height="12"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
                 <rect width="14" height="14" x="8" y="8" rx="2" ry="2" />
                 <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2" />
               </svg>
@@ -161,10 +217,24 @@ function LinkCard({ link, onDelete, onEdit }: { link: LinkItem; onDelete: (id: s
           )}
         </button>
         <button
-          onClick={(e) => { e.preventDefault(); e.stopPropagation(); setEditing(!editing); }}
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            setEditing(!editing);
+          }}
           className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-muted-foreground hover:text-foreground hover:bg-secondary transition-all"
         >
-          <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="12"
+            height="12"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
             <path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z" />
             <path d="m15 5 4 4" />
           </svg>
@@ -175,7 +245,17 @@ function LinkCard({ link, onDelete, onEdit }: { link: LinkItem; onDelete: (id: s
           onClick={(e) => e.stopPropagation()}
           className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-muted-foreground hover:text-foreground hover:bg-secondary transition-all"
         >
-          <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="12"
+            height="12"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
             <path d="M3 3v18h18" />
             <path d="M18 17V9" />
             <path d="M13 17V5" />
@@ -194,7 +274,11 @@ function LinkCard({ link, onDelete, onEdit }: { link: LinkItem; onDelete: (id: s
               Yes
             </button>
             <button
-              onClick={(e) => { e.preventDefault(); e.stopPropagation(); setDeleting(false); }}
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                setDeleting(false);
+              }}
               className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-medium text-muted-foreground hover:text-foreground hover:bg-secondary transition-all"
             >
               No
@@ -205,7 +289,17 @@ function LinkCard({ link, onDelete, onEdit }: { link: LinkItem; onDelete: (id: s
             onClick={handleDelete}
             className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-all"
           >
-            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="12"
+              height="12"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
               <path d="M3 6h18" />
               <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" />
               <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" />
@@ -226,7 +320,12 @@ export function LinksTable({ links, onDelete, onEdit }: LinksTableProps) {
   return (
     <div className="grid gap-3">
       {links.map((link) => (
-        <LinkCard key={link.id} link={link} onDelete={onDelete} onEdit={onEdit} />
+        <LinkCard
+          key={link.id}
+          link={link}
+          onDelete={onDelete}
+          onEdit={onEdit}
+        />
       ))}
     </div>
   );

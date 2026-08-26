@@ -67,8 +67,11 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
           <PaletteProvider>
             <header className="sticky top-0 z-50 border-b border-border bg-background/80 backdrop-blur-xl">
               <div className="max-w-5xl mx-auto px-4 h-14 flex items-center justify-between">
-                <Link href="/" className="flex items-center gap-2 font-bold text-lg hover:opacity-80 transition-opacity">
-                  <span className="text-primary text-xl">&#128279;</span>
+                <Link
+                  href="/"
+                  className="flex items-center gap-2 font-bold text-primary text-lg hover:opacity-80 transition-opacity"
+                >
+                  <span className="text-xl">&#128279;</span>
                   <span>Shortle</span>
                 </Link>
                 <nav className="flex items-center gap-2 text-sm">
