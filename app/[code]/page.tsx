@@ -25,6 +25,11 @@ export default async function RedirectPage({
   const headersList = await headers();
   const userAgent = headersList.get("user-agent");
   const referrer = headersList.get("referer") || headersList.get("referrer");
+  const country =
+    headersList.get("x-vercel-ip-country") ||
+    headersList.get("cf-ipcountry") ||
+    headersList.get("x-country") ||
+    null;
 
   await db.click.create({
     data: {
@@ -32,7 +37,7 @@ export default async function RedirectPage({
       referrer: referrer || null,
       device: detectDevice(userAgent),
       browser: detectBrowser(userAgent),
-      country: null,
+      country: country,
     },
   });
 
