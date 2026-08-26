@@ -39,18 +39,19 @@ function LinkCard({ link, onDelete }: { link: LinkItem; onDelete: (id: string) =
   };
 
   return (
-    <a
-      href={`/${link.id}`}
-      target="_blank"
-      rel="noopener noreferrer"
-      className="group block p-4 rounded-xl bg-card border border-card-border card-hover"
-    >
+    <div className="group p-4 rounded-xl bg-card border border-card-border card-hover">
       <div className="flex items-start justify-between gap-3">
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 mb-1.5">
-            <span className="font-mono text-sm text-accent font-medium group-hover:underline">
+            <a
+              href={`/${link.id}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-mono text-sm text-accent font-medium hover:underline"
+              title="Open short link"
+            >
               /{link.id}
-            </span>
+            </a>
             <span className="text-xs text-muted">&middot;</span>
             <span className="text-xs text-muted">{formatDate(link.createdAt)}</span>
           </div>
@@ -112,7 +113,7 @@ function LinkCard({ link, onDelete }: { link: LinkItem; onDelete: (id: string) =
           Delete
         </button>
       </div>
-    </a>
+    </div>
   );
 }
 
