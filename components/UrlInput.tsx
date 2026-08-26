@@ -24,7 +24,7 @@ export function UrlInput({ onSubmit }: UrlInputProps) {
     }
 
     if (!isValidUrl(url)) {
-      setError("Please enter a valid URL");
+      setError("Please enter a valid URL (include https://)");
       return;
     }
 
@@ -41,45 +41,83 @@ export function UrlInput({ onSubmit }: UrlInputProps) {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="w-full space-y-3">
-      <div className="flex gap-2">
-        <input
-          type="text"
-          value={url}
-          onChange={(e) => setUrl(e.target.value)}
-          placeholder="Paste your long URL here..."
-          className="flex-1 px-4 py-3 rounded-lg bg-card border border-card-border text-foreground placeholder:text-muted focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent transition-all"
-          disabled={isPending}
-        />
-        <button
-          type="submit"
-          disabled={isPending || !url.trim()}
-          className="px-6 py-3 rounded-lg bg-accent text-white font-medium hover:bg-accent-hover disabled:opacity-50 disabled:cursor-not-allowed transition-all"
-        >
-          {isPending ? "Shortening..." : "Shorten"}
-        </button>
+    <form onSubmit={handleSubmit} className="w-full">
+      <div className="p-1 rounded-xl bg-card border border-card-border glow-border">
+        <div className="flex items-center gap-2">
+          <div className="pl-4 text-muted">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
+              <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
+            </svg>
+          </div>
+          <input
+            type="text"
+            value={url}
+            onChange={(e) => { setUrl(e.target.value); setError(""); }}
+            placeholder="Paste your long URL here..."
+            className="flex-1 py-3.5 bg-transparent text-foreground placeholder:text-muted focus:outline-none text-base"
+            disabled={isPending}
+          />
+          <button
+            type="submit"
+            disabled={isPending || !url.trim()}
+            className="px-6 py-3 mr-1 rounded-lg bg-accent text-white font-medium text-sm hover:bg-accent-hover active:scale-[0.98] disabled:opacity-40 disabled:cursor-not-allowed transition-all"
+          >
+            {isPending ? (
+              <span className="flex items-center gap-2">
+                <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24" fill="none">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                </svg>
+                Shortening
+              </span>
+            ) : "Shorten"}
+          </button>
+        </div>
+
+        <div className="flex items-center justify-between px-4 pb-3 pt-1">
+          <button
+            type="button"
+            onClick={() => setShowCustom(!showCustom)}
+            className="text-xs text-muted hover:text-foreground transition-colors flex items-center gap-1.5"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={`transition-transform ${showCustom ? "rotate-90" : ""}`}>
+              <path d="M9 18l6-6-6-6" />
+            </svg>
+            {showCustom ? "Hide custom alias" : "Custom alias"}
+          </button>
+          {url && !error && (
+            <span className="text-xs text-muted">Press Enter to shorten</span>
+          )}
+        </div>
       </div>
 
-      <button
-        type="button"
-        onClick={() => setShowCustom(!showCustom)}
-        className="text-sm text-muted hover:text-foreground transition-colors"
-      >
-        {showCustom ? "Hide custom alias" : "Use custom alias"}
-      </button>
-
       {showCustom && (
-        <input
-          type="text"
-          value={customAlias}
-          onChange={(e) => setCustomAlias(e.target.value)}
-          placeholder="custom-alias"
-          className="w-full px-4 py-2 rounded-lg bg-card border border-card-border text-foreground placeholder:text-muted focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent transition-all font-mono text-sm"
-          disabled={isPending}
-        />
+        <div className="mt-3 animate-slide-up">
+          <div className="flex items-center gap-2 p-1 rounded-xl bg-card border border-card-border">
+            <span className="pl-4 text-sm text-muted font-mono">/</span>
+            <input
+              type="text"
+              value={customAlias}
+              onChange={(e) => setCustomAlias(e.target.value.replace(/[^a-zA-Z0-9_-]/g, ""))}
+              placeholder="custom-alias"
+              className="flex-1 py-2.5 bg-transparent text-foreground placeholder:text-muted focus:outline-none font-mono text-sm"
+              disabled={isPending}
+            />
+          </div>
+        </div>
       )}
 
-      {error && <p className="text-sm text-red-500">{error}</p>}
+      {error && (
+        <div className="mt-3 flex items-center gap-2 text-sm text-danger animate-fade-in">
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <circle cx="12" cy="12" r="10" />
+            <line x1="12" y1="8" x2="12" y2="12" />
+            <line x1="12" y1="16" x2="12.01" y2="16" />
+          </svg>
+          {error}
+        </div>
+      )}
     </form>
   );
 }

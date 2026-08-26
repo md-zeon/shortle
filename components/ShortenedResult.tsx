@@ -18,23 +18,49 @@ export function ShortenedResult({ shortUrl, id }: ShortenedResultProps) {
   };
 
   return (
-    <div className="w-full p-4 rounded-lg bg-card border border-card-border">
-      <div className="flex items-center justify-between gap-4">
+    <div className="p-4 rounded-xl bg-success/5 border border-success/20">
+      <div className="flex items-center gap-3">
+        <div className="flex-shrink-0 w-9 h-9 rounded-lg bg-success/10 flex items-center justify-center">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-success">
+            <polyline points="20 6 9 17 4 12" />
+          </svg>
+        </div>
         <div className="flex-1 min-w-0">
-          <p className="text-sm text-muted mb-1">Your shortened URL</p>
-          <p className="font-mono text-accent truncate">{shortUrl}</p>
+          <p className="text-xs text-success font-medium mb-0.5">Link created!</p>
+          <p className="font-mono text-sm text-foreground truncate">{shortUrl}</p>
         </div>
         <div className="flex items-center gap-2">
           <button
             onClick={handleCopy}
-            className="px-4 py-2 rounded-lg bg-accent text-white text-sm font-medium hover:bg-accent-hover transition-all"
+            className="flex items-center gap-1.5 px-3.5 py-2 rounded-lg bg-success text-white text-sm font-medium hover:bg-success/90 active:scale-[0.98] transition-all"
           >
-            {copied ? "Copied!" : "Copy"}
+            {copied ? (
+              <>
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <polyline points="20 6 9 17 4 12" />
+                </svg>
+                Copied
+              </>
+            ) : (
+              <>
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <rect width="14" height="14" x="8" y="8" rx="2" ry="2" />
+                  <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2" />
+                </svg>
+                Copy
+              </>
+            )}
           </button>
           <Link
             href={`/stats/${id}`}
-            className="px-4 py-2 rounded-lg border border-card-border text-sm font-medium hover:bg-card transition-all"
+            className="flex items-center gap-1.5 px-3.5 py-2 rounded-lg border border-card-border text-sm font-medium text-muted hover:text-foreground hover:bg-card transition-all"
           >
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M3 3v18h18" />
+              <path d="M18 17V9" />
+              <path d="M13 17V5" />
+              <path d="M8 17v-3" />
+            </svg>
             Stats
           </Link>
         </div>

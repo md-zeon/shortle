@@ -14,44 +14,54 @@ interface ClickChartProps {
   data: { date: string; clicks: number }[];
 }
 
+function CustomTooltip({ active, payload, label }: { active?: boolean; payload?: Array<{ value: number }>; label?: string }) {
+  if (!active || !payload?.length) return null;
+  return (
+    <div className="px-3 py-2 rounded-lg bg-card border border-card-border shadow-lg">
+      <p className="text-xs text-muted mb-0.5">{label}</p>
+      <p className="text-sm font-mono font-semibold">{payload[0].value} clicks</p>
+    </div>
+  );
+}
+
 export function ClickChart({ data }: ClickChartProps) {
   if (data.length === 0) {
     return (
-      <div className="p-6 rounded-lg bg-card border border-card-border">
+      <div className="p-6 rounded-xl bg-card border border-card-border">
         <h3 className="text-sm font-medium text-muted mb-4">Clicks Over Time</h3>
-        <p className="text-sm text-muted text-center py-8">No data yet</p>
+        <div className="h-[200px] flex items-center justify-center text-sm text-muted">
+          No clicks yet
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="p-6 rounded-lg bg-card border border-card-border">
+    <div className="p-6 rounded-xl bg-card border border-card-border">
       <h3 className="text-sm font-medium text-muted mb-4">Clicks Over Time</h3>
       <div className="h-[200px]">
         <ResponsiveContainer width="100%" height="100%">
-          <BarChart data={data}>
-            <CartesianGrid strokeDasharray="3 3" stroke="#2A2A2E" />
+          <BarChart data={data} barCategoryGap="20%">
+            <CartesianGrid strokeDasharray="3 3" stroke="#2A2A2E" vertical={false} />
             <XAxis
               dataKey="date"
               stroke="#71717A"
-              fontSize={12}
+              fontSize={11}
               tickLine={false}
               axisLine={false}
+              tickFormatter={(v) => {
+                const d = new Date(v);
+                return d.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+              }}
             />
             <YAxis
               stroke="#71717A"
-              fontSize={12}
+              fontSize={11}
               tickLine={false}
               axisLine={false}
+              allowDecimals={false}
             />
-            <Tooltip
-              contentStyle={{
-                backgroundColor: "#1A1A1E",
-                border: "1px solid #2A2A2E",
-                borderRadius: "8px",
-                fontSize: "12px",
-              }}
-            />
+            <Tooltip content={<CustomTooltip />} cursor={{ fill: "rgba(85, 66, 255, 0.06)" }} />
             <Bar dataKey="clicks" fill="#5542FF" radius={[4, 4, 0, 0]} />
           </BarChart>
         </ResponsiveContainer>
