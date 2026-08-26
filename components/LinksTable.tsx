@@ -31,6 +31,7 @@ function LinkCard({ link, onDelete, onEdit }: { link: LinkItem; onDelete: (id: s
   const [editing, setEditing] = useState(false);
   const [editUrl, setEditUrl] = useState(link.originalUrl);
   const [editError, setEditError] = useState("");
+  const [deleting, setDeleting] = useState(false);
   const baseUrl = typeof window !== "undefined" ? window.location.origin : "";
   const shortUrl = `${baseUrl}/${link.id}`;
 
@@ -45,6 +46,10 @@ function LinkCard({ link, onDelete, onEdit }: { link: LinkItem; onDelete: (id: s
   const handleDelete = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
+    if (!deleting) {
+      setDeleting(true);
+      return;
+    }
     onDelete(link.id);
   };
 
@@ -179,17 +184,35 @@ function LinkCard({ link, onDelete, onEdit }: { link: LinkItem; onDelete: (id: s
           Stats
         </Link>
         <div className="flex-1" />
-        <button
-          onClick={handleDelete}
-          className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-muted hover:text-danger hover:bg-danger/10 transition-all"
-        >
-          <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M3 6h18" />
-            <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" />
-            <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" />
-          </svg>
-          Delete
-        </button>
+        {deleting ? (
+          <div className="flex items-center gap-1.5">
+            <span className="text-xs text-danger">Delete?</span>
+            <button
+              onClick={handleDelete}
+              className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-medium text-white bg-danger hover:bg-danger/90 transition-all"
+            >
+              Yes
+            </button>
+            <button
+              onClick={(e) => { e.preventDefault(); e.stopPropagation(); setDeleting(false); }}
+              className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-medium text-muted hover:text-foreground hover:bg-background transition-all"
+            >
+              No
+            </button>
+          </div>
+        ) : (
+          <button
+            onClick={handleDelete}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-muted hover:text-danger hover:bg-danger/10 transition-all"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M3 6h18" />
+              <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" />
+              <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" />
+            </svg>
+            Delete
+          </button>
+        )}
       </div>
     </div>
   );

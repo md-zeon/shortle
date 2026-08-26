@@ -60,8 +60,6 @@ export default function Home() {
   };
 
   const handleDelete = async (id: string) => {
-    if (!confirm("Are you sure you want to delete this link?")) return;
-
     const res = await fetch(`/api/links/${id}`, {
       method: "DELETE",
     });
