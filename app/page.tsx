@@ -82,7 +82,7 @@ export default function Home() {
             Shorten, share &{" "}
             <span className="gradient-text">track</span>
           </h1>
-          <p className="text-muted text-lg max-w-md mx-auto">
+          <p className="text-muted-foreground text-lg max-w-md mx-auto">
             Paste a long URL. Get a short link. See who clicks.
           </p>
         </div>
@@ -104,7 +104,7 @@ export default function Home() {
           <section className="animate-fade-in">
             <div className="flex items-center justify-between mb-5">
               <h2 className="text-lg font-semibold">Recent Links</h2>
-              <span className="text-sm text-muted font-mono">{links.length} total</span>
+              <span className="text-sm text-muted-foreground font-mono">{links.length} total</span>
             </div>
             <LinksTable links={links} onDelete={handleDelete} onEdit={handleEdit} />
           </section>
@@ -112,13 +112,13 @@ export default function Home() {
 
         {links.length === 0 && !shortenedLink && (
           <div className="text-center py-16 animate-fade-in">
-            <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-card border border-card-border mb-5">
-              <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-muted">
+            <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-card border border-border mb-5">
+              <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-muted-foreground">
                 <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
                 <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
               </svg>
             </div>
-            <p className="text-muted">No links yet. Paste a URL above to get started.</p>
+            <p className="text-muted-foreground">No links yet. Paste a URL above to get started.</p>
           </div>
         )}
       </div>

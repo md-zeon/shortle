@@ -35,7 +35,7 @@ export function ShortenedResult({ shortUrl, id }: ShortenedResultProps) {
           <div className="flex items-center gap-1.5">
             <button
               onClick={handleCopy}
-              className="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-success text-white text-sm font-medium hover:bg-success/90 active:scale-[0.98] transition-all"
+              className="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-success text-success-foreground text-sm font-medium hover:opacity-90 active:scale-[0.98] transition-all"
             >
               {copied ? (
                 <>
@@ -56,7 +56,7 @@ export function ShortenedResult({ shortUrl, id }: ShortenedResultProps) {
             </button>
             <button
               onClick={() => setShowQr(true)}
-              className="flex items-center gap-1.5 px-3 py-2 rounded-lg border border-card-border text-sm font-medium text-muted hover:text-foreground hover:bg-card transition-all"
+              className="flex items-center gap-1.5 px-3 py-2 rounded-lg border border-border text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-card transition-all"
             >
               <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <rect width="5" height="5" x="3" y="3" rx="1" />
@@ -76,7 +76,7 @@ export function ShortenedResult({ shortUrl, id }: ShortenedResultProps) {
             </button>
             <Link
               href={`/stats/${id}`}
-              className="flex items-center gap-1.5 px-3 py-2 rounded-lg border border-card-border text-sm font-medium text-muted hover:text-foreground hover:bg-card transition-all"
+              className="flex items-center gap-1.5 px-3 py-2 rounded-lg border border-border text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-card transition-all"
             >
               <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M3 3v18h18" />

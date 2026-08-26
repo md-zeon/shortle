@@ -58,9 +58,9 @@ export function UrlInput({ onSubmit }: UrlInputProps) {
 
   return (
     <form onSubmit={handleSubmit} className="w-full">
-      <div className="p-1 rounded-xl bg-card border border-card-border glow-border">
+      <div className="p-1 rounded-xl bg-card border border-border glow-border">
         <div className="flex items-center gap-2">
-          <div className="pl-4 text-muted">
+          <div className="pl-4 text-muted-foreground">
             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
               <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
@@ -71,13 +71,13 @@ export function UrlInput({ onSubmit }: UrlInputProps) {
             value={url}
             onChange={(e) => { setUrl(e.target.value); setError(""); }}
             placeholder="Paste your long URL here..."
-            className="flex-1 py-3.5 bg-transparent text-foreground placeholder:text-muted focus:outline-none text-base"
+            className="flex-1 py-3.5 bg-transparent text-foreground placeholder:text-muted-foreground focus:outline-none text-base"
             disabled={isPending}
           />
           <button
             type="submit"
             disabled={isPending || !url.trim()}
-            className="px-6 py-3 mr-1 rounded-lg bg-accent text-white font-medium text-sm hover:bg-accent-hover active:scale-[0.98] disabled:opacity-40 disabled:cursor-not-allowed transition-all"
+            className="px-6 py-3 mr-1 rounded-lg bg-primary text-primary-foreground font-medium text-sm hover:opacity-90 active:scale-[0.98] disabled:opacity-40 disabled:cursor-not-allowed transition-all"
           >
             {isPending ? (
               <span className="flex items-center gap-2">
@@ -95,7 +95,7 @@ export function UrlInput({ onSubmit }: UrlInputProps) {
           <button
             type="button"
             onClick={() => setShowCustom(!showCustom)}
-            className="text-xs text-muted hover:text-foreground transition-colors flex items-center gap-1.5"
+            className="text-xs text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1.5"
           >
             <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={`transition-transform ${showCustom ? "rotate-90" : ""}`}>
               <path d="M9 18l6-6-6-6" />
@@ -103,32 +103,32 @@ export function UrlInput({ onSubmit }: UrlInputProps) {
             {showCustom ? "Hide options" : "Options"}
           </button>
           {url && !error && (
-            <span className="text-xs text-muted">Press Enter to shorten</span>
+            <span className="text-xs text-muted-foreground">Press Enter to shorten</span>
           )}
         </div>
       </div>
 
       {showCustom && (
         <div className="mt-3 space-y-3 animate-slide-up">
-          <div className="flex items-center gap-2 p-1 rounded-xl bg-card border border-card-border">
-            <span className="pl-4 text-sm text-muted font-mono">/</span>
+          <div className="flex items-center gap-2 p-1 rounded-xl bg-card border border-border">
+            <span className="pl-4 text-sm text-muted-foreground font-mono">/</span>
             <input
               type="text"
               value={customAlias}
               onChange={(e) => setCustomAlias(e.target.value.replace(/[^a-zA-Z0-9_-]/g, ""))}
               placeholder="custom-alias"
-              className="flex-1 py-2.5 bg-transparent text-foreground placeholder:text-muted focus:outline-none font-mono text-sm"
+              className="flex-1 py-2.5 bg-transparent text-foreground placeholder:text-muted-foreground focus:outline-none font-mono text-sm"
               disabled={isPending}
             />
           </div>
-          <div className="p-3 rounded-xl bg-card border border-card-border">
-            <label className="text-xs text-muted mb-2 block">Tags</label>
+          <div className="p-3 rounded-xl bg-card border border-border">
+            <label className="text-xs text-muted-foreground mb-2 block">Tags</label>
             {tags.length > 0 && (
               <div className="flex flex-wrap gap-1.5 mb-2">
                 {tags.map((tag) => (
                   <span
                     key={tag}
-                    className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-accent/10 text-accent text-xs font-medium"
+                    className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-primary/10 text-primary text-xs font-medium"
                   >
                     {tag}
                     <button
@@ -157,14 +157,14 @@ export function UrlInput({ onSubmit }: UrlInputProps) {
                   }
                 }}
                 placeholder="Add tag and press Enter"
-                className="flex-1 py-1.5 bg-transparent text-foreground placeholder:text-muted focus:outline-none text-sm"
+                className="flex-1 py-1.5 bg-transparent text-foreground placeholder:text-muted-foreground focus:outline-none text-sm"
                 disabled={isPending}
               />
               <button
                 type="button"
                 onClick={addTag}
                 disabled={!tagInput.trim()}
-                className="px-2.5 py-1.5 rounded-lg text-xs font-medium text-muted hover:text-foreground hover:bg-background transition-all disabled:opacity-30"
+                className="px-2.5 py-1.5 rounded-lg text-xs font-medium text-muted-foreground hover:text-foreground hover:bg-secondary transition-all disabled:opacity-30"
               >
                 Add
               </button>
@@ -174,14 +174,14 @@ export function UrlInput({ onSubmit }: UrlInputProps) {
       )}
 
       {error && (
-        <div className="mt-3 flex items-center gap-2 text-sm text-danger animate-fade-in">
+        <div className="mt-3 flex items-center gap-2 text-sm text-destructive animate-fade-in">
           <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <circle cx="12" cy="12" r="10" />
             <line x1="12" y1="8" x2="12" y2="12" />
             <line x1="12" y1="16" x2="12.01" y2="16" />
           </svg>
           {error}
-       </div>
+        </div>
       )}
     </form>
   );

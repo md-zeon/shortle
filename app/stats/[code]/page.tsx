@@ -89,7 +89,7 @@ export default async function StatsPage({
       <div className="max-w-4xl mx-auto px-4 pt-8 pb-12">
         <Link
           href="/"
-          className="inline-flex items-center gap-1.5 text-sm text-muted hover:text-foreground transition-colors mb-8"
+          className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors mb-8"
         >
           <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <path d="m15 18-6-6 6-6" />
@@ -99,8 +99,8 @@ export default async function StatsPage({
 
         <div className="mb-8 animate-fade-in">
           <div className="flex items-center gap-3 mb-3">
-            <div className="w-10 h-10 rounded-xl bg-accent/10 flex items-center justify-center">
-              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-accent">
+            <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-primary">
                 <path d="M3 3v18h18" />
                 <path d="M18 17V9" />
                 <path d="M13 17V5" />
@@ -109,9 +109,9 @@ export default async function StatsPage({
             </div>
             <div>
               <h1 className="text-xl font-bold">
-                <span className="font-mono text-accent">/{link.id}</span>
+                <span className="font-mono text-primary">/{link.id}</span>
               </h1>
-              <p className="text-sm text-muted">
+              <p className="text-sm text-muted-foreground">
                 Created {formatDate(link.createdAt)}
               </p>
             </div>
@@ -120,7 +120,7 @@ export default async function StatsPage({
             href={link.originalUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-1.5 text-sm text-muted hover:text-foreground transition-colors font-mono"
+            className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors font-mono"
           >
             {link.originalUrl}
             <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">

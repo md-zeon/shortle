@@ -78,7 +78,7 @@ function LinkCard({ link, onDelete, onEdit }: { link: LinkItem; onDelete: (id: s
   };
 
   return (
-    <div className="group p-4 rounded-xl bg-card border border-card-border card-hover">
+    <div className="group p-4 rounded-xl bg-card border border-border card-hover">
       <div className="flex items-start justify-between gap-3">
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 mb-1.5">
@@ -86,13 +86,13 @@ function LinkCard({ link, onDelete, onEdit }: { link: LinkItem; onDelete: (id: s
               href={`/${link.id}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="font-mono text-sm text-accent font-medium hover:underline"
+              className="font-mono text-sm text-primary font-medium hover:underline"
               title="Open short link"
             >
               /{link.id}
             </a>
-            <span className="text-xs text-muted">&middot;</span>
-            <span className="text-xs text-muted">{formatDate(link.createdAt)}</span>
+            <span className="text-xs text-muted-foreground">&middot;</span>
+            <span className="text-xs text-muted-foreground">{formatDate(link.createdAt)}</span>
           </div>
           {editing ? (
             <div className="mt-1">
@@ -102,20 +102,20 @@ function LinkCard({ link, onDelete, onEdit }: { link: LinkItem; onDelete: (id: s
                   value={editUrl}
                   onChange={(e) => { setEditUrl(e.target.value); setEditError(""); }}
                   onKeyDown={(e) => { if (e.key === "Enter") handleSaveEdit(); if (e.key === "Escape") { setEditing(false); setEditUrl(link.originalUrl); } }}
-                  className="flex-1 px-2.5 py-1.5 rounded-lg bg-background border border-card-border text-sm text-foreground focus:outline-none focus:border-accent font-mono"
+                  className="flex-1 px-2.5 py-1.5 rounded-lg bg-background border border-border text-sm text-foreground focus:outline-none focus:border-ring font-mono"
                   autoFocus
                 />
-                <button onClick={handleSaveEdit} className="px-2.5 py-1.5 rounded-lg bg-accent text-white text-xs font-medium hover:bg-accent-hover transition-all">
+                <button onClick={handleSaveEdit} className="px-2.5 py-1.5 rounded-lg bg-primary text-primary-foreground text-xs font-medium hover:opacity-90 transition-all">
                   Save
                 </button>
-                <button onClick={() => { setEditing(false); setEditUrl(link.originalUrl); setEditError(""); }} className="px-2.5 py-1.5 rounded-lg text-xs font-medium text-muted hover:text-foreground hover:bg-background transition-all">
+                <button onClick={() => { setEditing(false); setEditUrl(link.originalUrl); setEditError(""); }} className="px-2.5 py-1.5 rounded-lg text-xs font-medium text-muted-foreground hover:text-foreground hover:bg-secondary transition-all">
                   Cancel
                 </button>
               </div>
-              {editError && <p className="text-xs text-danger mt-1.5">{editError}</p>}
+              {editError && <p className="text-xs text-destructive mt-1.5">{editError}</p>}
             </div>
           ) : (
-            <p className="text-sm text-muted truncate" title={link.originalUrl}>
+            <p className="text-sm text-muted-foreground truncate" title={link.originalUrl}>
               {link.originalUrl}
             </p>
           )}
@@ -124,7 +124,7 @@ function LinkCard({ link, onDelete, onEdit }: { link: LinkItem; onDelete: (id: s
               {link.tags.map((tag) => (
                 <span
                   key={tag.id}
-                  className="px-2 py-0.5 rounded-md bg-accent/10 text-accent text-[11px] font-medium"
+                  className="px-2 py-0.5 rounded-md bg-primary/10 text-primary text-[11px] font-medium"
                 >
                   {tag.name}
                 </span>
@@ -134,13 +134,13 @@ function LinkCard({ link, onDelete, onEdit }: { link: LinkItem; onDelete: (id: s
         </div>
         <div className="text-right flex-shrink-0">
           <div className="font-mono text-lg font-semibold">{link._count.clicks}</div>
-          <div className="text-xs text-muted">clicks</div>
+          <div className="text-xs text-muted-foreground">clicks</div>
         </div>
       </div>
-      <div className="flex items-center gap-1 mt-3 pt-3 border-t border-card-border">
+      <div className="flex items-center gap-1 mt-3 pt-3 border-t border-border">
         <button
           onClick={handleCopy}
-          className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-muted hover:text-foreground hover:bg-background transition-all"
+          className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-muted-foreground hover:text-foreground hover:bg-secondary transition-all"
           title={copied ? "Copied!" : "Copy short URL"}
         >
           {copied ? (
@@ -162,7 +162,7 @@ function LinkCard({ link, onDelete, onEdit }: { link: LinkItem; onDelete: (id: s
         </button>
         <button
           onClick={(e) => { e.preventDefault(); e.stopPropagation(); setEditing(!editing); }}
-          className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-muted hover:text-foreground hover:bg-background transition-all"
+          className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-muted-foreground hover:text-foreground hover:bg-secondary transition-all"
         >
           <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z" />
@@ -173,7 +173,7 @@ function LinkCard({ link, onDelete, onEdit }: { link: LinkItem; onDelete: (id: s
         <Link
           href={`/stats/${link.id}`}
           onClick={(e) => e.stopPropagation()}
-          className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-muted hover:text-foreground hover:bg-background transition-all"
+          className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-muted-foreground hover:text-foreground hover:bg-secondary transition-all"
         >
           <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <path d="M3 3v18h18" />
@@ -186,16 +186,16 @@ function LinkCard({ link, onDelete, onEdit }: { link: LinkItem; onDelete: (id: s
         <div className="flex-1" />
         {deleting ? (
           <div className="flex items-center gap-1.5">
-            <span className="text-xs text-danger">Delete?</span>
+            <span className="text-xs text-destructive">Delete?</span>
             <button
               onClick={handleDelete}
-              className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-medium text-white bg-danger hover:bg-danger/90 transition-all"
+              className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-medium text-destructive-foreground bg-destructive hover:opacity-90 transition-all"
             >
               Yes
             </button>
             <button
               onClick={(e) => { e.preventDefault(); e.stopPropagation(); setDeleting(false); }}
-              className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-medium text-muted hover:text-foreground hover:bg-background transition-all"
+              className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-medium text-muted-foreground hover:text-foreground hover:bg-secondary transition-all"
             >
               No
             </button>
@@ -203,7 +203,7 @@ function LinkCard({ link, onDelete, onEdit }: { link: LinkItem; onDelete: (id: s
         ) : (
           <button
             onClick={handleDelete}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-muted hover:text-danger hover:bg-danger/10 transition-all"
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-all"
           >
             <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M3 6h18" />
